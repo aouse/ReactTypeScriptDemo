@@ -16,18 +16,19 @@ const ProductList = ({manualData = []}) => {
   // @ts-ignore
   const products = useSelector((state) => state.products);
   let items = (manualData.length > 0 ) ?  manualData : products.items;
-  
+  const { loading } = products || false;
   const [searchTerm, setSearchTerm ] = useState('');
   const [interacted, setInteracted] = useState(false)
   const [ currentLoadedrPosition,  setCurrentLoadedrPosition] = useState(0);
   
   const handleSearch = async (e: any) => {
-    setInteracted(true);
     e.preventDefault();
 
     // @ts-ignore
     const searchInput = e.target.value || document.querySelector('#search').value;
    
+    setInteracted(searchInput.length > 0);
+    
     if(manualData.length === 0)
       // @ts-ignore
       await dispatch(fetchProducts(encodeURIComponent(searchInput), LOAD_MORE_AMOUNT));
@@ -49,18 +50,19 @@ const ProductList = ({manualData = []}) => {
         <Form onSubmit={handleSearch} data-testid="searchForm">
           <Form.Group className="mb-3">
             <Form.Label>Search for music</Form.Label>
-            <Form.Control type="input" placeholder="Song, artist or album" id="search" data-testid="search" onChange={handleSearch}/>
+            <Form.Control type="input" placeholder="Song, artist or album" id="search" data-testid="search" onChange={handleSearch} autoComplete="off"/>
           </Form.Group>
         </Form>
-     
-      { items.length === 0 && interacted && <Alert variant="warning" data-testid="noResult">No results found</Alert>}
+      
+      { items.length === 0 && interacted && loading && <><Spinner animation="border" size="sm"/><span> Searching...</span></>}
+      { items.length === 0 && interacted && <Alert variant="warning" data-testid="noResult">No results found</Alert>} 
 
       { items.length > 0 &&
        <InfiniteScroll
           dataLength={items.length}
           next={loadMore}
           hasMore={(items.length >= 10) ? true : false}
-          height={310}
+          height={340}
           loader={<><Spinner animation="border" size="sm"/><span> Loading more...</span></>}
           
         >

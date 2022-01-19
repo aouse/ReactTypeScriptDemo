@@ -11,23 +11,19 @@ test('renders title', () => {
   expect(titleElement).toBeInTheDocument();
 });
 
-test('show no results label when there is an empty search through submit', () => {
-  render(<App />) 
-  const formsubmit = screen.getByTestId('searchForm'); 
-
-  fireEvent.submit(formsubmit);  
-  expect(screen.queryByTestId(/noResult/i)).toBeTruthy();
-
-});
-
-test('Do not show no results label when no input on submission has been made', () => {
+test('Do not show "no results" if form has not been interacted with', () => {
   render(<App />)   
-  const search = screen.getByTestId('search'); 
-  fireEvent.change(search);
   expect(screen.queryByTestId(/noResult/i)).toBeFalsy();
 });
 
-test('Show no results label when no results are found', () => {
+test('Do not show "no results" label when there is an empty search through submit', () => {
+  render(<App />) 
+  const formsubmit = screen.getByTestId('searchForm'); 
+  fireEvent.submit(formsubmit);  
+  expect(screen.queryByTestId(/noResult/i)).toBeFalsy();
+});
+
+test('Show "no results" label when no results are found', () => {
   render(<App />)   
   const search = screen.getByTestId('search'); 
   fireEvent.change(search, { target: {value:'kljvdljkfdklgjfkl'}});
